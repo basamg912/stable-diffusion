@@ -15,25 +15,30 @@ The accompanying Compose file simplifies the container build and execution:
 - **Volume Mount**: Binds a local `./workspace` directory to `/workspace` within the container for persistent project storage and seamless code editing.
 - **Interactive Environment**: Exposes port `8888` (which can be used for Jupyter notebooks) and keeps `stdin` and `tty` open for interactive terminal sessions using the `basamg` user.
 
-### Step by Step
+## Step by Step
 
 First of all, You should download ckpt file to 'models/ldm/stable-diffusion-v1/model.ckpt'
 
-Then execute below command to execute docker container
+### Execute Docker Container
 ```
 $ docker compose build
 $ docker compose up -d
 $ docker attach jetson_v2
-$ python3 optimizedSD/optimized_txt2img.py --prompt "A highly detailed cinematic portrait of a cybernetic wanderer in a neon-lit futuristic Seoul street, wearing techwear clothing, intricate mechanical details on face, rainy night, reflection on puddles, photorealistic, masterpiece, shot on 35mm lens, sharp focus, depth of field."
 ```
 
-below is the result of image according to prompt
+### Generate Your Images
+```
+$ python3 optimizedSD/optimized_txt2img.py --prompt "A highly detailed cinematic portrait of a cybernetic wanderer in a neon-lit futuristic Seoul street, wearing techwear clothing, intricate mechanical details on face, rainy night, reflection on puddles, photorealistic, masterpiece, shot on 35mm lens, sharp focus, depth of field." --H 512 --W 512 --seed 27 --n_iters 1 --n_samples 1 --dim_steps 50
+```
+- :warning: Both H and W option must be set to 512.
 
-| Command  | Result  |
+## below is the result of image according to prompt
+
+| Prompt  | Result  |
 |---|---|
-| "A highly detailed cinematic portrait of a cybernetic wanderer in a neon-lit futuristic Seoul street, wearing techwear clothing, intricate mechanical details on face, rainy night, reflection on puddles, photorealistic, masterpiece, shot on 35mm lens, sharp focus, depth of field."  |   |
-| "A highly detailed cinematic portrait of a cybernetic wanderer in a neon-lit futuristic Seoul street, wearing techwear clothing, intricate mechanical details on face, rainy night, reflection on puddles"  |   |
-|"Korean man wearing coat jacket in the coffe shop drink ice americano using transparent straw."||
+| "A highly detailed cinematic portrait of a cybernetic wanderer in a neon-lit futuristic Seoul street, wearing techwear clothing, intricate mechanical details on face, rainy night, reflection on puddles _**, photorealistic, masterpiece, shot on 35mm lens, sharp focus, depth of field.**_"  | ![image](outputs/txt2img-samples/Highly_detailed_Korean_guy_of_a_cybernetic_wanderer_in_a_neon-lit_futuristic_Seoul_street,_wearing_techwear_clothing,_intricat/seed_27_00001.png)  |
+| "A highly detailed cinematic portrait of a cybernetic wanderer in a neon-lit futuristic Seoul street, wearing techwear clothing, intricate mechanical details on face, rainy night, reflection on puddles"  | ![image2](outputs/txt2img-samples/Highly_detailed_cinematic_portrait_of_a_cybernetic_wanderer_in_a_neon-lit_futuristic_Seoul_street,_wearing_techwear_clothing,_/seed_27_00004.png)  |
+|"Korean man wearing coat jacket in the coffe shop drink ice americano using transparent straw."| ![image3](outputs/txt2img-samples/Korean_man_wearing_coat_jacket_in_the_coffee_shop_drink_ice_americano_using_transparent_straw./seed_27_00000.png) |
 
 ---
 
