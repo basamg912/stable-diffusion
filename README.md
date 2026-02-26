@@ -1,3 +1,42 @@
+## Jetson Exclusive Docker Setup
+
+For NVIDIA Jetson devices (specifically those running JetPack 6, L4T r36.4.0), a dedicated `dockerfile` and `docker-compose.yaml` have been provided to optimize the environment for Jetson architectures.
+
+### `dockerfile`
+The Jetson-specific Dockerfile is built on top of `nvcr.io/nvidia/l4t-jetpack:r36.4.0` and includes:
+- **NVIDIA Jetson Keyrings & Source Lists**: Properly configures `apt` sources for Jetson OTA updates.
+- **JetPack Specific PyTorch**: Installs PyTorch 2.9.1 and Torchvision 0.24.1 built specially for JetPack 6 (`cu126`, `aarch64`).
+- **CUDSS**: Installs the NVIDIA cuDSS library for accelerated sparse linear solvers on Tegra.
+- **User Permissions**: Creates a dedicated non-root user `basamg` and sets up the `/workspace` directory to avoid running everything as root.
+
+### `docker-compose.yaml`
+The accompanying Compose file simplifies the container build and execution:
+- **GPU Acceleration**: Utilizes the `nvidia` driver and reserves GPUs to fully enable hardware acceleration capabilities inside the container.
+- **Volume Mount**: Binds a local `./workspace` directory to `/workspace` within the container for persistent project storage and seamless code editing.
+- **Interactive Environment**: Exposes port `8888` (which can be used for Jupyter notebooks) and keeps `stdin` and `tty` open for interactive terminal sessions using the `basamg` user.
+
+### Step by Step
+
+First of all, You should download ckpt file to 'models/ldm/stable-diffusion-v1/model.ckpt'
+
+Then execute below command to execute docker container
+```
+$ docker compose build
+$ docker compose up -d
+$ docker attach jetson_v2
+$ python3 optimizedSD/optimized_txt2img.py --prompt "A highly detailed cinematic portrait of a cybernetic wanderer in a neon-lit futuristic Seoul street, wearing techwear clothing, intricate mechanical details on face, rainy night, reflection on puddles, photorealistic, masterpiece, shot on 35mm lens, sharp focus, depth of field."
+```
+
+below is the result of image according to prompt
+
+| Command  | Result  |
+|---|---|
+| "A highly detailed cinematic portrait of a cybernetic wanderer in a neon-lit futuristic Seoul street, wearing techwear clothing, intricate mechanical details on face, rainy night, reflection on puddles, photorealistic, masterpiece, shot on 35mm lens, sharp focus, depth of field."  |   |
+| "A highly detailed cinematic portrait of a cybernetic wanderer in a neon-lit futuristic Seoul street, wearing techwear clothing, intricate mechanical details on face, rainy night, reflection on puddles"  |   |
+|"Korean man wearing coat jacket in the coffe shop drink ice americano using transparent straw."||
+
+---
+
 <h1 align="center">Optimized Stable Diffusion</h1>
 <p align="center">
     <img src="https://img.shields.io/github/last-commit/basujindal/stable-diffusion?logo=Python&logoColor=green&style=for-the-badge"/>
@@ -24,6 +63,7 @@ Alternatively, if you prefer to use Docker, you can do the following:
 4. `cd` into `~/stable-diffusion` and execute `docker compose up --build`
 
 This will launch gradio on port 7860 with txt2img. You can also use `docker compose run` to execute other Python scripts.
+
 
 <h1 align="center">Usage</h1>
 
