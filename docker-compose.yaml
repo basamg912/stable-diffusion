@@ -1,0 +1,26 @@
+name: jetson_3644_docker
+services:
+  jetpack-env:
+    build: # docker compose support building image using this section → 필수 요소는 아님
+      context: .
+      dockerfile: dockerfile
+    image: jetson_docker:v2
+    container_name: jetson_docker
+
+    deploy: # constraints and requirements for running its container → 필수 요소는 아님
+      resources: # platform guarantee container can allocate at least the configured amount
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu] # gpu = 그래픽 가속, tpu = AI 가속
+    volumes:
+      - type: bind
+        source: ./workspace
+        target: /workspace
+    stdin_open: true
+    tty: true
+    ports:
+      - 8888:8888
+    user: allai
+    working_dir: /workspace
