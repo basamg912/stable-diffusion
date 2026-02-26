@@ -16,11 +16,11 @@ services:
               capabilities: [gpu] # gpu = 그래픽 가속, tpu = AI 가속
     volumes:
       - type: bind
-        source: ./workspace
+        source: ./
         target: /workspace
     stdin_open: true
     tty: true
     ports:
       - 8888:8888
-    user: allai
+    user: basamg
     working_dir: /workspace

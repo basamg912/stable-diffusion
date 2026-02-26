@@ -8,7 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # ENV 는 컨테이너 내부에서 여전히 유효
 ENV PATH="/usr/local/cuda/bin:${PATH}"
-
+ENV PYTHONPATH="${PYTHON_PATH}:/workspace:src/taming-transformers:src/clip"
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     wget \
@@ -42,7 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # (URLs kept as provided, assuming they are correct for your specific JetPack version)
 RUN pip install --no-cache-dir https://pypi.jetson-ai-lab.io/jp6/cu126/+f/02f/de421eabbf626/torch-2.9.1-cp310-cp310-linux_aarch64.whl#sha256=02fde421eabbf62633092de30405ea4d917323c55bea22bfd10dfeb1f1023506 \
     https://pypi.jetson-ai-lab.io/jp6/cu126/+f/d5b/caaf709f11750/torchvision-0.24.1-cp310-cp310-linux_aarch64.whl#sha256=d5bcaaf709f11750b5bb0f6ec30f37605da2f3d5cb3cd2b0fe5fac2850e08642
-
+RUN pip install omegaconf tqdm einops "pytorch-lightning<2.0.0" pandas transformers scipy
 # Install CUDSS
 # Checks file, installs, and then deletes the .deb to save space
 RUN wget https://developer.download.nvidia.com/compute/cudss/0.7.1/local_installers/cudss-local-tegra-repo-ubuntu2204-0.7.1_0.7.1-1_arm64.deb && \
@@ -52,8 +52,11 @@ RUN wget https://developer.download.nvidia.com/compute/cudss/0.7.1/local_install
     apt-get -y install cudss && \
     rm cudss-local-tegra-repo-ubuntu2204-0.7.1_0.7.1-1_arm64.deb && \
     rm -rf /var/lib/apt/lists/*
+COPY src/clip /tmp/clip
+COPY src/taming-transformers /tmp/taming-transformers
 
-
+RUN pip install -e /tmp/clip
+RUN pip install -e /tmp/taming-transformers
 EXPOSE 8888
 LABEL maintainer="basamg@allai.com"
 LABEL description="Environment for Training and Inference Network for Jetson"
@@ -62,12 +65,12 @@ LABEL version="L4T_36.4.4_CUDA_12.6"
 # 컨테이너 진입시 실행할 명령어
 ENTRYPOINT ["/bin/bash"]
 VOLUME ["/workspace"]
-# Create user 'allai'
-RUN useradd -ms /bin/bash allai
+# Create user 'basamg'
+RUN useradd -ms /bin/bash basamg
 
 # Set permissions for workspace (if it exists or will be mounted)
-RUN mkdir -p /workspace && chown -R allai:allai /workspace
+RUN mkdir -p /workspace && chown -R basamg:basamg /workspace
 
-USER allai
+USER basamg
 WORKDIR /workspace
 
