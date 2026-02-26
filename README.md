@@ -32,7 +32,7 @@ $ python3 optimizedSD/optimized_txt2img.py --prompt "A highly detailed cinematic
 ```
 - :warning: Both H and W option must be set to 512.
 
-## below is the result of image according to prompt
+## Below are the images generated based on the provided promt.
 
 | Prompt  | Result  |
 |---|---|
